@@ -36,7 +36,6 @@ function AnalysisLoading({ fileName }) {
 export function App() {
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
-  const [secret, setSecret] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [copyState, setCopyState] = useState(false);
@@ -72,7 +71,7 @@ export function App() {
     try {
       const response = await fetch(analysisUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Webhook-Secret": secret },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ raw_email: await file.text() }),
       });
       const payload = await response.json();
@@ -139,10 +138,6 @@ export function App() {
               <strong>{file ? file.name : "Drop an .eml file here"}</strong>
               <span className="text-sm text-[#686868]">{file ? `${(file.size / 1024).toFixed(1)} KB selected` : "or click to browse · maximum 10 MB"}</span>
             </button>
-            <label className="mt-5 block text-sm text-slate-300">
-              Webhook secret <span className="text-xs text-[#686868]">Required when WEBHOOK_SECRET is configured.</span>
-              <input className="input mt-2" type="password" autoComplete="off" value={secret} onChange={(event) => setSecret(event.target.value)} />
-            </label>
             <button className="button-primary mt-5" disabled={busy} type="submit">
               {busy && <LoaderCircle className="animate-spin" size={17} />} {busy ? "Analyzing..." : "Analyze email"}
             </button>

@@ -27,8 +27,15 @@ def _authorized(provided: str | None, configured: str | None) -> bool:
     return bool(provided) and hmac.compare_digest(provided.encode(), configured.encode())
 
 
-def _validate_payload(payload: WebhookEmail, request: Request, settings: Settings, secret: str | None) -> None:
-    if not _authorized(secret, settings.webhook_secret):
+def _validate_payload(
+    payload: WebhookEmail,
+    request: Request,
+    settings: Settings,
+    secret: str | None,
+    *,
+    authenticate: bool = True,
+) -> None:
+    if authenticate and not _authorized(secret, settings.webhook_secret):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid webhook authentication")
     content_length = request.headers.get("content-length")
     if content_length and content_length.isdigit() and int(content_length) > settings.max_email_size_bytes:
@@ -58,12 +65,7 @@ async def analyze_email(
     x_webhook_secret: Annotated[str | None, Header()] = None,
 ):
     settings = get_settings()
-    if not settings.webhook_secret:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Direct analysis requires WEBHOOK_SECRET to be configured",
-        )
-    _validate_payload(payload, request, settings, x_webhook_secret)
+    _validate_payload(payload, request, settings, x_webhook_secret, authenticate=False)
     email, result = _analyze(payload)
     return _result_payload(email, result)
 

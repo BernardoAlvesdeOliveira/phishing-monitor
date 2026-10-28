@@ -128,7 +128,6 @@ by FastAPI. It provides:
 
 - A copyable provider webhook URL.
 - Drag-and-drop `.eml` upload.
-- A webhook-secret field.
 - Client-side validation for `.eml` files and the 10 MB default limit.
 - A branded Mastercard-inspired interface using the included logo.
 - An animated progress state while analysis is running.
@@ -136,8 +135,14 @@ by FastAPI. It provides:
 - Risk score, level, status, findings, and notification status.
 
 Browser analysis uses `/analyze/email`. It returns results directly to the
-page and does not send an email alert. Direct analysis is disabled unless
-`WEBHOOK_SECRET` is configured.
+page and does not send an email alert. It does not require `WEBHOOK_SECRET`.
+
+<img src="media/images/emails-painel.png" alt="Phishing Monitor dashboard" width="100%">
+
+The dashboard accepts `.eml` files through drag-and-drop or file selection.
+After analysis, it displays the risk score, assessment status, and findings.
+
+<img src="media/images/email-analysis.png" alt="Email analysis result" width="100%">
 
 ## Email provider webhook integrations
 
@@ -198,9 +203,9 @@ Returns:
 
 ### `POST /analyze/email`
 
-Used by the browser for direct analysis. Requires `WEBHOOK_SECRET` to be
-configured and the matching `X-Webhook-Secret` header. Returns analysis only;
-it does not send an alert.
+Used by the browser for direct analysis. It does not require
+`WEBHOOK_SECRET` or an authentication header. Returns analysis only; it does
+not send an alert.
 
 ### `POST /webhook/email`
 
@@ -244,7 +249,7 @@ control. Never commit real secrets.
 ```dotenv
 APP_ENV=development
 
-# Required for browser analysis and request authentication.
+# Optional shared secret for provider webhook authentication.
 WEBHOOK_SECRET=replace-with-a-long-random-secret
 
 # Optional SMTP notification configuration.
@@ -348,6 +353,15 @@ npm run dev
 
 Vite proxies `/webhook` and `/analyze` requests to
 `http://127.0.0.1:8000`.
+
+To start the backend and frontend together:
+
+```bash
+./run-dev.sh
+```
+
+Open <http://127.0.0.1:5173/> for the Vite development page. Press
+`Ctrl+C` to stop both processes.
 
 ## Testing
 
