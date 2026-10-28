@@ -1,6 +1,6 @@
 # Phishing Monitor
 
-<img src="media/images/mastercard-logo.png" alt="Mastercard logo" width="90" align="right">
+<img src="media/images/mastercard-logo.png" alt="Mastercard logo" width="150" align="right" hspace="25">
 Mastercard is a global payments technology company that connects consumers,
 financial institutions, merchants, governments, and businesses through digital
 payment networks and related technology. This project is an independent
