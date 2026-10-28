@@ -1,0 +1,1 @@
+"""Phishing Monitor application package."""
